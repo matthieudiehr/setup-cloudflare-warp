@@ -30705,7 +30705,7 @@ async function checkWARPRegistration(organization, is_registered) {
     },
   };
 
-  await lib_exec.exec("warp-cli", ["--accept-tos", "registration", "organization"], options);
+  await exec.exec("warp-cli", ["--accept-tos", "registration", "organization"], options);
 
   const registered = output.includes(`${organization}`);
   if (is_registered && !registered) {
@@ -30819,11 +30819,7 @@ async function cleanup() {
       break;
   }
 
-  const organization = lib_core.getInput("organization", { required: true });
-  await (0,backoff.backOff)(
-    () => checkWARPRegistration(organization, false),
-    backoffOptions,
-  );
+  await lib_exec.exec("warp-cli", ["--accept-tos", "registration", "delete"]);
 }
 
 ;// CONCATENATED MODULE: ./cleanup.js

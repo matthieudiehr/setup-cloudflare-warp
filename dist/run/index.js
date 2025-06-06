@@ -30514,7 +30514,7 @@ var __webpack_exports__ = {};
 "use strict";
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var lib_core = __nccwpck_require__(7484);
+var core = __nccwpck_require__(7484);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
 var lib_exec = __nccwpck_require__(5236);
 // EXTERNAL MODULE: external "fs"
@@ -30590,7 +30590,7 @@ async function installWindowsClient(version) {
   } else {
     await lib_exec.exec("choco install -y --no-progress warp");
   }
-  lib_core.addPath("C:\\Program Files\\Cloudflare\\Cloudflare WARP\\");
+  core.addPath("C:\\Program Files\\Cloudflare\\Cloudflare WARP\\");
 }
 
 async function writeLinuxConfiguration(
@@ -30746,19 +30746,19 @@ async function run() {
     );
   }
 
-  const version = lib_core.getInput("version", { required: false });
-  const organization = lib_core.getInput("organization", { required: true });
-  const auth_client_id = lib_core.getInput("auth_client_id", { required: true });
-  const auth_client_secret = lib_core.getInput("auth_client_secret", {
+  const version = core.getInput("version", { required: false });
+  const organization = core.getInput("organization", { required: true });
+  const auth_client_id = core.getInput("auth_client_id", { required: true });
+  const auth_client_secret = core.getInput("auth_client_secret", {
     required: true,
   });
-  const unique_client_id = lib_core.getInput("unique_client_id", {
+  const unique_client_id = core.getInput("unique_client_id", {
     required: false
   });
-  const configure_docker_dns = lib_core.getBooleanInput("configure_docker_dns", {
+  const configure_docker_dns = core.getBooleanInput("configure_docker_dns", {
     required: false,
   });
-  const vnet = lib_core.getInput("vnet", { required: false });
+  const vnet = core.getInput("vnet", { required: false });
 
   switch (process.platform) {
     case "linux":
@@ -30819,11 +30819,7 @@ async function cleanup() {
       break;
   }
 
-  const organization = core.getInput("organization", { required: true });
-  await backOff(
-    () => checkWARPRegistration(organization, false),
-    backoffOptions,
-  );
+  await exec.exec("warp-cli", ["--accept-tos", "registration", "delete"]);
 }
 
 ;// CONCATENATED MODULE: ./index.js
@@ -30838,7 +30834,7 @@ async function cleanup() {
     // see https://github.com/ruby/setup-ruby/issues/543
     process.exit()
   } catch (error) {
-    lib_core.setFailed(error.message);
+    core.setFailed(error.message);
   }
 })();
 
