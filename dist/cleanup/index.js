@@ -30705,7 +30705,7 @@ async function checkWARPRegistration(organization, is_registered) {
     },
   };
 
-  await exec.exec("warp-cli", ["--accept-tos", "registration", "organization"], options);
+  await lib_exec.exec("warp-cli", ["--accept-tos", "registration", "organization"], options);
 
   const registered = output.includes(`${organization}`);
   if (is_registered && !registered) {
@@ -30799,6 +30799,7 @@ async function run() {
   );
   await exec.exec("warp-cli", ["--accept-tos", "connect"]);
   await backOff(() => checkWARPConnected(), backoffOptions);
+  core.saveState("connected", "true");
   if (vnet !== "") {
     await exec.exec("warp-cli", ["--accept-tos", "vnet", vnet]);
   }
@@ -30819,7 +30820,17 @@ async function cleanup() {
       break;
   }
 
-  await lib_exec.exec("warp-cli", ["--accept-tos", "registration", "delete"]);
+  const connected = !!lib_core.getState("connected");
+  if (connected) {
+    const organization = lib_core.getInput("organization", { required: true });
+    await (0,backoff.backOff)(
+      () => checkWARPRegistration(organization, false),
+      backoffOptions,
+    );
+  }
+  // Explicit process.exit() to not wait hanging promises,
+  // see https://github.com/ruby/setup-ruby/issues/543
+  process.exit()
 }
 
 ;// CONCATENATED MODULE: ./cleanup.js
