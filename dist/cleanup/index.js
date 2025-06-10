@@ -30287,26 +30287,26 @@ async function checkWARPRegistration(organization, should_be_registered) {
             output += data.toString();
           },
         };
-        await lib_exec.exec(`bash -c "warp-cli --accept-tos registration organization|grep ${organization}`, options);
+        await exec.exec(`bash -c "warp-cli --accept-tos registration organization|grep ${organization}`, options);
       }
       catch(e){
-        await lib_exec.exec(`echo "setting registred=false"`);
+        await exec.exec(`echo "setting registred=false"`);
         registered = false;
       }
 
-      await lib_exec.exec(`echo "should_be_registered=${should_be_registered} registred=${registered}"`);
+      await exec.exec(`echo "should_be_registered=${should_be_registered} registred=${registered}"`);
       if (should_be_registered && !registered) {
-        await lib_exec.exec(`echo "WARP is not registered"`);
+        await exec.exec(`echo "WARP is not registered"`);
         throw new Error("WARP is not registered");
       } else if (!should_be_registered && registered) {
-        await lib_exec.exec(`echo "WARP is still registered"`);
+        await exec.exec(`echo "WARP is still registered"`);
         throw new Error("WARP is still registered");
       }
     }
     catch(Error){
       restart = true;
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await lib_exec.exec(`echo "counter=${counter}`);
+      await exec.exec(`echo "counter=${counter}`);
       counter++
     }
   }while (restart && counter < 10);
@@ -30427,12 +30427,8 @@ async function cleanup() {
 
   const connected = !!lib_core.getState("connected");
   if (connected) {
-    const organization = lib_core.getInput("organization", { required: true });
-    await checkWARPRegistration(organization, false);
+    await lib_exec.exec("warp-cli", ["--accept-tos", "disconnect"]);
   }
-  // Explicit process.exit() to not wait hanging promises,
-  // see https://github.com/ruby/setup-ruby/issues/543
-  process.exit()
 }
 
 ;// CONCATENATED MODULE: ./cleanup.js
