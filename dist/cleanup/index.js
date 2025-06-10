@@ -30270,49 +30270,53 @@ async function configureLinuxDockerDNS() {
 }
 
 async function checkWARPRegistration(organization, should_be_registered) {
-  let output = "";
-  const options = {};
-  options.listeners = {
-    stdout: (data) => {
-      output += data.toString();
-    },
-  };
-
   let restart = false;
+  let counter = 0
   do
   {
     try{
       restart = false;
+
+      let output = "";
+      const options = {};
+      options.listeners = {
+        stdout: (data) => {
+          output += data.toString();
+        },
+      };
       await lib_exec.exec("warp-cli", ["--accept-tos", "registration", "organization"], options);
 
       const registered = output.includes(`${organization}`);
       if (should_be_registered && !registered) {
+        await lib_exec.exec("echo", ["WARP is not registered"], options);
         throw new Error("WARP is not registered");
       } else if (!should_be_registered && registered) {
+        await lib_exec.exec("echo", ["WARP is still registered"], options);
         throw new Error("WARP is still registered");
       }
     }
     catch(Error){
       restart = true;
       await new Promise(resolve => setTimeout(resolve, 1000));
+      counter++
     }
-  }while (restart);
+  }while (restart && counter < 10);
 }
 
 async function checkWARPConnected() {
-  let output = "";
-  const options = {};
-  options.listeners = {
-    stdout: (data) => {
-      output += data.toString();
-    },
-  };
-
   let restart = false;
   do
   {
     try{
       restart = false;
+
+      let output = "";
+      const options = {};
+      options.listeners = {
+        stdout: (data) => {
+          output += data.toString();
+        },
+      };
       await exec.exec("warp-cli", ["--accept-tos", "status"], options);
 
       // Retry connect on missing registration
