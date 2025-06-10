@@ -30283,7 +30283,7 @@ async function checkWARPRegistration(organization, should_be_registered) {
   {
     try{
       restart = false;
-      await exec.exec("warp-cli", ["--accept-tos", "registration", "organization"], options);
+      await lib_exec.exec("warp-cli", ["--accept-tos", "registration", "organization"], options);
 
       const registered = output.includes(`${organization}`);
       if (should_be_registered && !registered) {
@@ -30412,11 +30412,11 @@ async function cleanup() {
       break;
   }
 
-  // const connected = !!core.getState("connected");
-  // if (connected) {
-  //   const organization = core.getInput("organization", { required: true });
-  //   await checkWARPRegistration(organization, false);
-  // }
+  const connected = !!lib_core.getState("connected");
+  if (connected) {
+    const organization = lib_core.getInput("organization", { required: true });
+    await checkWARPRegistration(organization, false);
+  }
   // Explicit process.exit() to not wait hanging promises,
   // see https://github.com/ruby/setup-ruby/issues/543
   process.exit()
