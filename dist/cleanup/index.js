@@ -30696,7 +30696,7 @@ async function configureLinuxDockerDNS() {
   await exec.exec("sudo systemctl restart docker");
 }
 
-async function checkWARPRegistration(organization, is_registered) {
+async function checkWARPRegistration(organization, should_be_registered) {
   let output = "";
   const options = {};
   options.listeners = {
@@ -30708,9 +30708,11 @@ async function checkWARPRegistration(organization, is_registered) {
   await lib_exec.exec("warp-cli", ["--accept-tos", "registration", "organization"], options);
 
   const registered = output.includes(`${organization}`);
-  if (is_registered && !registered) {
+  if (should_be_registered && !registered) {
+    await lib_exec.exec("echo", ["WARP is not registered"], options);
     throw new Error("WARP is not registered");
-  } else if (!is_registered && registered) {
+  } else if (!should_be_registered && registered) {
+    await lib_exec.exec("echo", ["WARP is still registered"], options);
     throw new Error("WARP is still registered");
   }
 }
