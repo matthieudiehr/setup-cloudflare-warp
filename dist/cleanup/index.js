@@ -30425,10 +30425,10 @@ async function cleanup() {
       break;
   }
 
-  const connected = !!lib_core.getState("connected");
-  if (connected) {
-    await lib_exec.exec("warp-cli", ["--accept-tos", "disconnect"]);
-  }
+  // const connected = !!core.getState("connected");
+  // if (connected) {
+  //   await exec.exec("warp-cli", ["--accept-tos", "disconnect"]);
+  // }
 }
 
 ;// CONCATENATED MODULE: ./cleanup.js
