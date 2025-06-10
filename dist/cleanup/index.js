@@ -30278,26 +30278,35 @@ async function checkWARPRegistration(organization, should_be_registered) {
       restart = false;
 
       let output = "";
-      const options = {};
-      options.listeners = {
-        stdout: (data) => {
-          output += data.toString();
-        },
-      };
-      await lib_exec.exec("warp-cli", ["--accept-tos", "registration", "organization"], options);
 
-      const registered = output.includes(`${organization}`);
+      let registered = true;
+      try{
+        const options = {};
+        options.listeners = {
+          stdout: (data) => {
+            output += data.toString();
+          },
+        };
+        await lib_exec.exec(`bash -c "warp-cli --accept-tos registration organization|grep ${organization}`, options);
+      }
+      catch(e){
+        await lib_exec.exec(`echo "setting registred=false"`);
+        registered = false;
+      }
+
+      await lib_exec.exec(`echo "should_be_registered=${should_be_registered} registred=${registered}"`);
       if (should_be_registered && !registered) {
-        await lib_exec.exec("echo", ["WARP is not registered"], options);
+        await lib_exec.exec(`echo "WARP is not registered"`);
         throw new Error("WARP is not registered");
       } else if (!should_be_registered && registered) {
-        await lib_exec.exec("echo", ["WARP is still registered"], options);
+        await lib_exec.exec(`echo "WARP is still registered"`);
         throw new Error("WARP is still registered");
       }
     }
     catch(Error){
       restart = true;
       await new Promise(resolve => setTimeout(resolve, 1000));
+      await lib_exec.exec(`echo "counter=${counter}`);
       counter++
     }
   }while (restart && counter < 10);
