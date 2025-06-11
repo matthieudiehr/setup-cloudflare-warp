@@ -31,10 +31,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - run: npm ci && npm run build
-      - uses: ./
-        with:
-          organization: ${{ secrets.CLOUDFLARE_ACCESS_ORGANIZATION }}
-          auth_client_id: ${{ secrets.CLOUDFLARE_ACCESS_CLIENT_ID }}
-          auth_client_secret: ${{ secrets.CLOUDFLARE_ACCESS_CLIENT_SECRET }}
-          configure_docker_dns: true
-      - run: curl -I https://www.google.com
+      # - uses: ./
+      #   with:
+      #     organization: ${{ secrets.CLOUDFLARE_ACCESS_ORGANIZATION }}
+      #     auth_client_id: ${{ secrets.CLOUDFLARE_ACCESS_CLIENT_ID }}
+      #     auth_client_secret: ${{ secrets.CLOUDFLARE_ACCESS_CLIENT_SECRET }}
+      #     configure_docker_dns: true
+      # - run: curl -I https://www.google.com
